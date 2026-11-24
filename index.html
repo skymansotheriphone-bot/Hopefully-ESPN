@@ -1,133 +1,142 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Volleyball Live Scoreboard</title>
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Volleyball Live</title>
 <style>
-:root{--bg:#0b1220;--panel:#121e30;--panel2:#1b2b42;--line:#2d405b;--text:#f5f8fc;--muted:#a9b8ca;--accent:#f3b72f;--home:#1769aa;--away:#a83245;--green:#28c982}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-button,input,select{font:inherit}button{border:0;border-radius:12px;padding:12px 14px;background:#263a55;color:white;font-weight:750;cursor:pointer}button:active{transform:scale(.98)}button.primary{background:var(--accent);color:#17202d}button.good{background:#167c59}button.danger{background:#873447}input,select{width:100%;border:1px solid var(--line);background:#0e1929;color:white;border-radius:10px;padding:11px;min-width:0}
-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line);gap:12px}header strong{font-size:17px;letter-spacing:.04em}header small{color:var(--muted)}
-main{max-width:1100px;margin:auto;padding:16px;display:grid;gap:14px}.toolbar{display:flex;gap:8px;flex-wrap:wrap}.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:15px}.card h2{font-size:14px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin:0 0 12px}.teams{display:grid;grid-template-columns:1fr 1fr;gap:12px}.team{border-radius:14px;padding:14px;background:var(--panel2);border-top:5px solid var(--home)}.team.away{border-top-color:var(--away)}.team-head{display:flex;align-items:center;gap:10px}.logo{width:42px;height:42px;border-radius:10px;display:grid;place-items:center;background:#0d1929;color:var(--accent);font-weight:900;overflow:hidden;flex:none}.logo img{width:100%;height:100%;object-fit:cover}.team-name{font-weight:900;font-size:clamp(16px,3vw,22px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.score{font-size:clamp(54px,10vw,82px);font-weight:950;line-height:1;text-align:center;margin:16px 0}.score-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.score-actions button{font-size:18px;padding:15px}.meta{display:flex;justify-content:space-between;color:var(--muted);font-size:13px;margin-top:10px}.settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.field{display:grid;gap:5px}.field label{font-size:12px;color:var(--muted);font-weight:700}.wide{grid-column:1/-1}.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.serve{display:flex;align-items:center;gap:8px}.serve button{flex:1}.serve .active{outline:2px solid var(--accent);background:#59451b}.sets{display:flex;gap:7px;flex-wrap:wrap}.set-chip{background:#20334c;border:1px solid var(--line);padding:8px 10px;border-radius:9px;font-weight:800}.set-chip.current{border-color:var(--accent);color:var(--accent)}.status{font-size:12px;color:var(--muted)}.note{color:var(--muted);font-size:12px;line-height:1.45}.overlay-wrap{min-height:100vh;display:flex;align-items:flex-end;justify-content:center;padding:4vh 3vw;background:transparent}.overlay{width:min(1100px,100%);display:grid;grid-template-columns:1fr auto 1fr;align-items:stretch;background:rgba(7,13,23,.94);border:1px solid rgba(255,255,255,.18);border-radius:12px;overflow:hidden;box-shadow:0 8px 35px #0008}.ov-team{display:flex;align-items:center;gap:12px;padding:12px 16px;min-width:0}.ov-team.home{border-left:7px solid var(--home)}.ov-team.away{border-right:7px solid var(--away);justify-content:flex-end;text-align:right}.ov-name{font-weight:900;font-size:clamp(15px,2vw,24px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ov-score{font-size:clamp(34px,5vw,58px);font-weight:950;line-height:1}.ov-center{background:#17263a;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 14px;min-width:125px}.ov-set{font-weight:900;color:var(--accent);font-size:13px;letter-spacing:.1em}.ov-serving{font-size:11px;color:#d8e4f2;margin-top:4px}.ov-history{grid-column:1/-1;display:flex;justify-content:center;gap:8px;padding:7px 10px;background:#0d1828;font-size:12px;font-weight:800;color:#c9d6e5}.ov-history span{padding:2px 8px;border-right:1px solid #40516a}.ov-timeout{color:var(--accent)}
-.hidden{display:none!important}
-@media(max-width:600px){main{padding:10px}.teams{gap:8px}.team{padding:10px}.team-head{align-items:flex-start}.score{margin:12px 0}.settings{grid-template-columns:1fr}.overlay-wrap{padding:3vw}.ov-team{padding:8px;gap:6px}.ov-center{min-width:78px;padding:5px}.ov-name{font-size:12px}.ov-score{font-size:32px}.ov-team .logo{width:28px;height:28px}.ov-set{font-size:10px}.ov-serving{font-size:9px}.ov-history{font-size:10px;gap:3px}}
-</style>
-</head>
-<body>
-<div id="controller">
-<header><div><strong>VOLLEYBALL LIVE</strong><br><small>Score controller · landscape broadcast</small></div><div class="status" id="syncStatus">Local preview mode</div></header>
-<main>
-<div class="toolbar">
-<button class="primary" id="overlayBtn">Open overlay view ↗</button>
-<button id="undoBtn">↶ Undo</button>
-<button id="resetBtn" class="danger">Reset match</button>
-</div>
-<section class="teams">
-<div class="team" id="homeCard">
- <div class="team-head"><div class="logo" id="homeLogo">H</div><div style="min-width:0;flex:1"><div class="team-name" id="homeTitle">HOME</div><div class="status" id="homeSets">0 SETS WON</div></div></div>
- <div class="score" id="homeScore">0</div>
- <div class="score-actions"><button class="good" id="homePlus">+ POINT</button><button id="homeMinus">− POINT</button></div>
- <div class="meta"><span id="homeTimeouts">Timeouts: 2</span><span id="homeServing"></span></div>
-</div>
-<div class="team away" id="awayCard">
- <div class="team-head"><div class="logo" id="awayLogo">A</div><div style="min-width:0;flex:1"><div class="team-name" id="awayTitle">AWAY</div><div class="status" id="awaySets">0 SETS WON</div></div></div>
- <div class="score" id="awayScore">0</div>
- <div class="score-actions"><button class="good" id="awayPlus">+ POINT</button><button id="awayMinus">− POINT</button></div>
- <div class="meta"><span id="awayTimeouts">Timeouts: 2</span><span id="awayServing"></span></div>
-</div>
-</section>
-<section class="card">
-<h2>Match control</h2>
-<div class="row" style="justify-content:space-between;margin-bottom:12px"><div><b id="setLabel">SET 1</b> <span class="status" id="matchStatus">· Best of 3</span></div><div class="sets" id="setHistory"></div></div>
-<div class="serve"><button id="serveHome">🏐 HOME SERVING</button><button id="serveAway">AWAY SERVING</button></div>
-<div class="row" style="margin-top:12px">
-<button id="homeTimeout">HOME TIMEOUT</button><button id="awayTimeout">AWAY TIMEOUT</button><button id="nextSet" class="primary">NEXT SET</button>
-</div>
-<p class="note">Standard rules: sets 1–4 to 25, deciding set to 15, win by 2. Change match format below if needed. Timeout counters reset at the start of each set.</p>
-</section>
-<section class="card">
-<h2>Teams & match setup</h2>
-<div class="settings">
-<div class="field"><label>HOME TEAM</label><input id="homeName" value="HOME" maxlength="24"></div>
-<div class="field"><label>AWAY TEAM</label><input id="awayName" value="AWAY" maxlength="24"></div>
-<div class="field"><label>HOME COLOR</label><input id="homeColor" type="color" value="#1769aa"></div>
-<div class="field"><label>AWAY COLOR</label><input id="awayColor" type="color" value="#a83245"></div>
-<div class="field"><label>HOME LOGO (image URL)</label><input id="homeLogoUrl" placeholder="https://..."></div>
-<div class="field"><label>AWAY LOGO (image URL)</label><input id="awayLogoUrl" placeholder="https://..."></div>
-<div class="field"><label>FORMAT</label><select id="format"><option value="3">Best of 3</option><option value="5">Best of 5</option></select></div>
-<div class="field"><label>POINTS (sets 1–4)</label><select id="target"><option>25</option><option>21</option><option>15</option></select></div>
-<div class="field"><label>DECIDING SET POINTS</label><select id="finalTarget"><option>15</option><option>25</option><option>21</option></select></div>
-<div class="field"><label>TIMEOUTS PER SET</label><select id="timeoutLimit"><option>2</option><option>1</option><option>3</option><option>0</option></select></div>
-<div class="wide row"><button class="primary" id="applySettings">Apply team & match settings</button><span class="status">Changes save in this browser.</span></div>
-</div>
-</section>
-<section class="card">
-<h2>PRISM Live setup</h2>
-<ol class="note" style="padding-left:20px;line-height:1.8">
-<li>Host this HTML page on a static HTTPS host such as GitHub Pages.</li>
-<li>Open the hosted page on your phone and use the controller.</li>
-<li>In PRISM, add a Web Browser / Web source and enter the same page URL with <b>?overlay=1</b> at the end.</li>
-<li>Set the source to fit your 16:9 landscape stream and place it along the bottom.</li>
-</ol>
-<p class="note"><b>Important:</b> This starter version syncs tabs in the same browser using local storage. PRISM's separate in-app browser may not share that storage. For reliable phone-to-PRISM syncing, a free cloud database connection (Firebase or Supabase) and hosting setup are needed; this file does not pretend to provide cross-app cloud sync out of the box.</p>
-<div class="row"><button id="copyOverlay">Copy overlay URL</button><button id="exportState">Export match backup</button><button id="importState">Import backup</button><input id="importFile" type="file" accept="application/json" class="hidden"></div>
-</section>
-</main>
-</div>
-<div id="overlayScreen" class="hidden">
-<div class="overlay-wrap"><div class="overlay">
-<div class="ov-team home"><div class="logo" id="ovHomeLogo">H</div><div style="min-width:0"><div class="ov-name" id="ovHomeName">HOME</div><div class="status" id="ovHomeTimeout"></div></div><div class="ov-score" id="ovHomeScore">0</div></div>
-<div class="ov-center"><div class="ov-set" id="ovSet">SET 1</div><div class="ov-serving" id="ovServe">● HOME SERVING</div></div>
-<div class="ov-team away"><div class="ov-score" id="ovAwayScore">0</div><div style="min-width:0"><div class="ov-name" id="ovAwayName">AWAY</div><div class="status" id="ovAwayTimeout"></div></div><div class="logo" id="ovAwayLogo">A</div></div>
-<div class="ov-history" id="ovHistory"></div>
-</div></div>
-</div>
-<script>
-const defaults=()=>({home:'HOME',away:'AWAY',homeColor:'#1769aa',awayColor:'#a83245',homeLogo:'',awayLogo:'',format:3,target:25,finalTarget:15,timeoutLimit:2,set:1,homeScore:0,awayScore:0,homeSets:0,awaySets:0,serve:'home',timeoutsHome:2,timeoutsAway:2,history:[],finished:false,undo:[]});
-let s=load()||defaults();
-function load(){try{return JSON.parse(localStorage.getItem('vb-live-state'))}catch(e){return null}}
-function save(){localStorage.setItem('vb-live-state',JSON.stringify(s));render()}
-function snapshot(){s.undo.push(JSON.stringify({...s,undo:[]}));if(s.undo.length>30)s.undo.shift()}
-function logo(el,url,letter){el.innerHTML='';if(url){let im=document.createElement('img');im.src=url;im.onerror=()=>{el.textContent=letter};el.append(im)}else el.textContent=letter}
-function render(){
- const $=id=>document.getElementById(id), setsNeeded=Math.ceil(s.format/2);
- $('homeTitle').textContent=s.home;$('awayTitle').textContent=s.away;$('homeScore').textContent=s.homeScore;$('awayScore').textContent=s.awayScore;
- $('homeSets').textContent=s.homeSets+' SETS WON';$('awaySets').textContent=s.awaySets+' SETS WON';
- $('homeTimeouts').textContent='Timeouts: '+s.timeoutsHome;$('awayTimeouts').textContent='Timeouts: '+s.timeoutsAway;
- $('homeServing').textContent=s.serve==='home'?'● SERVING':'';$('awayServing').textContent=s.serve==='away'?'● SERVING':'';
- $('setLabel').textContent='SET '+s.set;$('matchStatus').textContent=s.finished?'· MATCH COMPLETE':'· Best of '+s.format;
- $('homeCard').style.borderTopColor=s.homeColor;$('awayCard').style.borderTopColor=s.awayColor;
- document.documentElement.style.setProperty('--home',s.homeColor);document.documentElement.style.setProperty('--away',s.awayColor);
- logo($('homeLogo'),s.homeLogo,s.home.slice(0,1).toUpperCase());logo($('awayLogo'),s.awayLogo,s.away.slice(0,1).toUpperCase());
- $('serveHome').classList.toggle('active',s.serve==='home');$('serveAway').classList.toggle('active',s.serve==='away');
- $('nextSet').disabled=s.finished;$('nextSet').style.opacity=s.finished?'.4':'1';
- $('setHistory').innerHTML='';s.history.forEach((h,i)=>{let x=document.createElement('span');x.className='set-chip';x.textContent='S'+(i+1)+' '+h.h+'–'+h.a;$('setHistory').append(x)});
- $('ovHomeName').textContent=s.home;$('ovAwayName').textContent=s.away;$('ovHomeScore').textContent=s.homeScore;$('ovAwayScore').textContent=s.awayScore;$('ovSet').textContent='SET '+s.set;
- $('ovServe').textContent='● '+(s.serve==='home'?s.home:s.away)+' SERVING';$('ovHomeTimeout').textContent='TIMEOUTS '+s.timeoutsHome;$('ovAwayTimeout').textContent='TIMEOUTS '+s.timeoutsAway;
- logo($('ovHomeLogo'),s.homeLogo,s.home.slice(0,1).toUpperCase());logo($('ovAwayLogo'),s.awayLogo,s.away.slice(0,1).toUpperCase());
- $('ovHistory').innerHTML='';s.history.forEach((h,i)=>{let x=document.createElement('span');x.textContent='SET '+(i+1)+'  '+h.h+'–'+h.a;$('ovHistory').append(x)});
+
+:root{
+  --navy:#07111f;--navy2:#10233a;--gold:#f5c451;--blue:#36b6f4;--red:#ff647c;
+  --muted:#9fb2c8;--line:rgba(173,199,228,.16);--panel:rgba(16,34,56,.88);
+  --glow:0 18px 48px rgba(0,0,0,.32)
 }
-function point(team,delta){if(s.finished)return;snapshot();s[team+'Score']=Math.max(0,s[team+'Score']+delta);if(delta>0)s.serve=team;checkSet();save()}
-function checkSet(){let target=s.set===s.format?s.finalTarget:s.target, a=s.homeScore,b=s.awayScore;if(Math.max(a,b)>=target&&Math.abs(a-b)>=2){let winner=a>b?'home':'away';s[winner+'Sets']++;s.history.push({h:a,a:b});if(s[winner+'Sets']>=Math.ceil(s.format/2)){s.finished=true}else{s.set++;s.homeScore=0;s.awayScore=0;s.timeoutsHome=s.timeoutLimit;s.timeoutsAway=s.timeoutLimit;s.serve=winner}}}
-function timeout(team){if(s.finished)return;let k='timeouts'+(team==='home'?'Home':'Away');if(s[k]<=0)return;snapshot();s[k]--;save()}
-function nextSet(){if(s.finished)return;if(s.homeScore||s.awayScore){let target=s.set===s.format?s.finalTarget:s.target;if(Math.max(s.homeScore,s.awayScore)>=target&&Math.abs(s.homeScore-s.awayScore)>=2){checkSet()}else{if(!confirm('Current set is not complete. Start the next set anyway?'))return;snapshot();s.history.push({h:s.homeScore,a:s.awayScore});s.set++;s.homeScore=0;s.awayScore=0;s.timeoutsHome=s.timeoutLimit;s.timeoutsAway=s.timeoutLimit}}else return;save()}
-function reset(){if(!confirm('Reset the entire match?'))return;let keep={home:s.home,away:s.away,homeColor:s.homeColor,awayColor:s.awayColor,homeLogo:s.homeLogo,awayLogo:s.awayLogo,format:s.format,target:s.target,finalTarget:s.finalTarget,timeoutLimit:s.timeoutLimit};s={...defaults(),...keep,timeoutsHome:keep.timeoutLimit,timeoutsAway:keep.timeoutLimit};save()}
-document.getElementById('homePlus').onclick=()=>point('home',1);document.getElementById('awayPlus').onclick=()=>point('away',1);document.getElementById('homeMinus').onclick=()=>point('home',-1);document.getElementById('awayMinus').onclick=()=>point('away',-1);
-document.getElementById('serveHome').onclick=()=>{snapshot();s.serve='home';save()};document.getElementById('serveAway').onclick=()=>{snapshot();s.serve='away';save()};
-document.getElementById('homeTimeout').onclick=()=>timeout('home');document.getElementById('awayTimeout').onclick=()=>timeout('away');document.getElementById('nextSet').onclick=nextSet;document.getElementById('resetBtn').onclick=reset;
-document.getElementById('undoBtn').onclick=()=>{if(!s.undo.length)return;let old=JSON.parse(s.undo.pop());old.undo=s.undo;s=old;save()};
-document.getElementById('applySettings').onclick=()=>{snapshot();s.home=document.getElementById('homeName').value.trim()||'HOME';s.away=document.getElementById('awayName').value.trim()||'AWAY';s.homeColor=document.getElementById('homeColor').value;s.awayColor=document.getElementById('awayColor').value;s.homeLogo=document.getElementById('homeLogoUrl').value.trim();s.awayLogo=document.getElementById('awayLogoUrl').value.trim();s.format=+document.getElementById('format').value;s.target=+document.getElementById('target').value;s.finalTarget=+document.getElementById('finalTarget').value;s.timeoutLimit=+document.getElementById('timeoutLimit').value;s.timeoutsHome=s.timeoutLimit;s.timeoutsAway=s.timeoutLimit;save()};
-document.getElementById('overlayBtn').onclick=()=>window.open(location.href.split('?')[0]+'?overlay=1','vb-overlay');
-document.getElementById('copyOverlay').onclick=async()=>{let u=location.href.split('?')[0]+'?overlay=1';try{await navigator.clipboard.writeText(u);alert('Overlay URL copied: '+u)}catch(e){prompt('Copy this overlay URL',u)}};
-document.getElementById('exportState').onclick=()=>{let b=new Blob([JSON.stringify(s,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='volleyball-match-backup.json';a.click();URL.revokeObjectURL(a.href)};
-document.getElementById('importState').onclick=()=>document.getElementById('importFile').click();
-document.getElementById('importFile').onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{s=JSON.parse(r.result);save()}catch(x){alert('Invalid backup file')}};r.readAsText(f)};
-const overlay=new URLSearchParams(location.search).get('overlay')==='1';if(overlay){document.getElementById('controller').classList.add('hidden');document.getElementById('overlayScreen').classList.remove('hidden');document.body.style.background='transparent';document.documentElement.style.background='transparent'}
-if(!overlay){['homeName','awayName','homeColor','awayColor','homeLogoUrl','awayLogoUrl','format','target','finalTarget','timeoutLimit'].forEach(id=>{let map={homeName:'home',awayName:'away',homeColor:'homeColor',awayColor:'awayColor',homeLogoUrl:'homeLogo',awayLogoUrl:'awayLogo',format:'format',target:'target',finalTarget:'finalTarget',timeoutLimit:'timeoutLimit'};document.getElementById(id).value=s[map[id]]})}
-render();
-window.addEventListener('storage',e=>{if(e.key==='vb-live-state'){s=load()||s;render()}});
-if('BroadcastChannel'in window){let bc=new BroadcastChannel('vb-live-score');bc.onmessage=()=>{s=load()||s;render()};const oldSave=save;save=function(){localStorage.setItem('vb-live-state',JSON.stringify(s));bc.postMessage('update');render()}}
-</script>
-</body>
-</html>
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 50% -20%,#1b3c60 0%,#0a1728 48%,#060d18 100%);color:#f7fbff;font:15px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial}
+button,input,select{font:inherit}
+button{border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:12px 16px;background:linear-gradient(180deg,#263f5e,#1a304a);color:#f6f9ff;font-weight:800;letter-spacing:.01em;box-shadow:0 5px 14px rgba(0,0,0,.16);transition:transform .16s ease,filter .16s ease,border-color .16s ease}
+button:hover{filter:brightness(1.14);transform:translateY(-1px);border-color:rgba(255,255,255,.22)}
+button:active{transform:translateY(1px)}
+button:disabled{opacity:.4;cursor:not-allowed;transform:none}
+button.primary{background:linear-gradient(135deg,#f7d16a,#e9a92c);color:#172338;border-color:#ffe19a}
+button.good{background:linear-gradient(135deg,#159a76,#087357)}
+button.danger{background:linear-gradient(135deg,#a83c58,#76283f)}
+header{padding:17px 20px;border-bottom:1px solid var(--line);background:rgba(5,14,25,.56);backdrop-filter:blur(18px);font-size:12px;letter-spacing:.16em;color:#dce9f8}
+header b{font-weight:950}
+main{max-width:1080px;margin:auto;padding:20px;display:grid;gap:16px}
+.toolbar,.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.card,.team{background:linear-gradient(145deg,rgba(21,43,68,.94),rgba(10,25,43,.94));border:1px solid var(--line);border-radius:20px;padding:17px;box-shadow:var(--glow);backdrop-filter:blur(16px)}
+.teams{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.team{border-top:3px solid var(--blue);position:relative;overflow:hidden}
+.team:after{content:"";position:absolute;inset:0 0 auto;height:100px;background:linear-gradient(180deg,rgba(255,255,255,.045),transparent);pointer-events:none}
+.team.away{border-top-color:var(--red)}
+.head{display:flex;align-items:center;gap:11px;position:relative;z-index:1}
+.logo{width:46px;height:46px;display:grid;place-items:center;background:linear-gradient(145deg,#0a1728,#1b3451);border:1px solid rgba(255,255,255,.12);border-radius:13px;color:var(--gold);font-weight:950;overflow:hidden;flex:none}
+.logo img{width:100%;height:100%;object-fit:cover}
+.name{font-weight:900;font-size:19px;letter-spacing:.015em}
+.score{font-size:clamp(58px,8vw,78px);line-height:1;text-align:center;font-weight:950;margin:19px 0 17px;font-variant-numeric:tabular-nums;letter-spacing:-.055em;text-shadow:0 8px 25px #0005}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.actions button{font-size:15px;padding:13px 10px}
+.meta{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:11px;margin-top:13px;font-weight:750;letter-spacing:.04em}
+.card h2{font-size:11px;letter-spacing:.18em;color:#a9bdd4;margin:0 0 14px;font-weight:900}
+.settings{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{display:grid;gap:7px}
+.field label{font-size:10px;color:#a9bdd4;letter-spacing:.13em;font-weight:850}
+input,select{width:100%;padding:12px 13px;border-radius:11px;border:1px solid rgba(173,199,228,.2);background:rgba(4,14,26,.72);color:#fff;outline:none;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus{border-color:#48bdf2;box-shadow:0 0 0 3px rgba(54,182,244,.14)}
+input[type=color]{padding:4px;height:43px}
+.wide{grid-column:1/-1}
+.serve{display:flex;gap:9px}
+.serve button{flex:1}
+.active{outline:2px solid var(--gold);outline-offset:2px}
+.chip{background:rgba(66,105,145,.25);border:1px solid var(--line);border-radius:9px;padding:7px 10px;font-size:11px;font-weight:800}
+.note{font-size:12px;line-height:1.6;color:#9fb2c8}
+.hidden{display:none!important}
+
+
+/* Reference-inspired compact college-volleyball broadcast strip */
+#overlayScreen{position:fixed;inset:0;background:transparent;pointer-events:none}
+.stage{position:absolute;left:50%;bottom:5%;transform:translateX(-50%);width:min(1320px,98vw)}
+.bug{
+ display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(220px,.78fr);
+ background:linear-gradient(180deg,#f8f8f4 0%,#e2e4e1 100%);
+ color:#18212a;border:1px solid rgba(15,25,35,.75);border-radius:2px;overflow:hidden;
+ box-shadow:0 5px 18px rgba(0,0,0,.42);position:relative;backdrop-filter:none
+}
+.bug:before{content:none}
+.side{display:flex;align-items:center;gap:10px;min-width:0;padding:5px 12px 4px;background:linear-gradient(180deg,#fafbf8,#dfe2df)}
+.side.home{grid-column:1;grid-row:1;border-left:0;border-right:1px solid #9da5a5}
+.side.away{grid-column:2;grid-row:1;justify-content:flex-start;text-align:left;border-right:1px solid #9da5a5}
+.info{min-width:0;flex:1}
+.teamname{font-size:clamp(15px,2.05vw,27px);font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.025em;color:#202a32;line-height:1.05}
+.sets{font-size:clamp(9px,.9vw,12px);color:#647078;font-weight:750;letter-spacing:.015em;margin-top:2px}
+.bigscore{font-size:clamp(30px,3.3vw,45px);font-weight:850;line-height:1;min-width:42px;text-align:center;font-variant-numeric:tabular-nums;letter-spacing:-.04em;color:#202a32}
+.logo{width:52px;height:48px;display:grid;place-items:center;background:#eceeeb;border:0;border-radius:0;color:#18212a;font-weight:950;overflow:hidden;flex:none}
+.logo img{width:100%;height:100%;object-fit:contain}
+.side.home .logo{background:#e66a35}
+.side.away .logo{background:#e9ecef}
+.center{grid-column:3;grid-row:1;background:linear-gradient(180deg,#f7f8f5,#dfe2df);border:0;display:flex;flex-direction:row;align-items:center;justify-content:center;padding:5px 12px}
+.brand{display:none}
+.setnum{font-size:clamp(14px,1.75vw,24px);font-weight:850;letter-spacing:.005em;color:#29333a;white-space:nowrap}
+.serveText{font-size:0;font-weight:900;white-space:nowrap;color:#28323a;letter-spacing:0}
+.serveText:empty{display:none}
+.foot{grid-column:1/-1;background:linear-gradient(180deg,#d4d8d5,#c6cbc8);border-top:1px solid #aab1ae;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;min-height:17px}
+.foot span{font-size:9px;font-weight:800;color:#56616a;padding:2px 9px;border-right:1px solid #aab1ae;letter-spacing:.015em}
+.foot .live{color:#a43b34}
+.foot .state{color:#7b4f00;letter-spacing:.04em}
+.flash{animation:flash .5s ease-out}
+@keyframes flash{0%{transform:scale(1.18);color:#b47a00;text-shadow:0 0 12px #e9b84a}100%{transform:scale(1);color:#202a32;text-shadow:none}}
+.pulse{animation:pulse .28s ease-out}
+@keyframes pulse{from{opacity:.65;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:620px){
+ .stage{width:99vw;bottom:4%}
+ .bug{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(96px,.72fr)}
+ .side{gap:5px;padding:4px 5px}
+ .logo{width:31px;height:34px}
+ .teamname{font-size:clamp(9px,2.6vw,14px)}
+ .sets{font-size:7px}
+ .bigscore{font-size:clamp(21px,5.5vw,31px);min-width:23px}
+ .center{padding:4px 3px}
+ .setnum{font-size:clamp(9px,2.4vw,14px);white-space:normal;text-align:center}
+ .foot span{font-size:7px;padding:2px 4px}
+}
+
+</style></head><body>
+<div id="controller"><header><b>VOLLEYBALL LIVE · BROADCAST CONTROL</b></header><main>
+<div class="toolbar"><button class="primary" id="openOverlay">Open broadcast overlay ↗</button><button id="undo">↶ Undo</button><button class="danger" id="reset">Reset match</button></div>
+<section class="teams">
+<div class="team" id="hc"><div class="head"><div class="logo" id="hl">H</div><div><div class="name" id="hn">HOME</div><small id="hs">0 SETS WON</small></div></div><div class="score" id="hscore">0</div><div class="actions"><button class="good" id="hp">+ POINT</button><button id="hm">− POINT</button></div><div class="meta"><span id="ht">Timeouts: 2</span><span id="hserve"></span></div></div>
+<div class="team away" id="ac"><div class="head"><div class="logo" id="al">A</div><div><div class="name" id="an">AWAY</div><small id="as">0 SETS WON</small></div></div><div class="score" id="ascore">0</div><div class="actions"><button class="good" id="ap">+ POINT</button><button id="am">− POINT</button></div><div class="meta"><span id="at">Timeouts: 2</span><span id="aserve"></span></div></div></section>
+<section class="card"><h2>MATCH CONTROL</h2><div class="row"><b id="setlabel">SET 1</b><span id="formatlabel">Best of 3</span><div class="row" id="history"></div></div><p class="serve"><button id="sh">🏐 HOME SERVING</button><button id="sa">AWAY SERVING</button></p><div class="row"><button id="th">HOME TIMEOUT</button><button id="ta">AWAY TIMEOUT</button><button class="primary" id="next">NEXT SET</button></div><p class="note">Sets 1–4 to 25, deciding set to 15, win by 2. Timeout counters reset each set.</p></section>
+<section class="card"><h2>TEAMS & MATCH SETTINGS</h2><div class="settings">
+<div class="field"><label>HOME TEAM</label><input id="homeName" maxlength="24"></div><div class="field"><label>AWAY TEAM</label><input id="awayName" maxlength="24"></div>
+<div class="field"><label>HOME COLOR</label><input id="homeColor" type="color"></div><div class="field"><label>AWAY COLOR</label><input id="awayColor" type="color"></div>
+<div class="field"><label>HOME LOGO URL</label><input id="homeLogo" placeholder="https://..."></div><div class="field"><label>AWAY LOGO URL</label><input id="awayLogo" placeholder="https://..."></div>
+<div class="field"><label>FORMAT</label><select id="format"><option value="3">Best of 3</option><option value="5">Best of 5</option></select></div><div class="field"><label>SETS 1–4 TARGET</label><select id="target"><option>25</option><option>21</option><option>15</option></select></div>
+<div class="field"><label>DECIDING SET TARGET</label><select id="finalTarget"><option>15</option><option>25</option><option>21</option></select></div><div class="field"><label>TIMEOUTS PER SET</label><select id="timeoutLimit"><option>2</option><option>1</option><option>3</option><option>0</option></select></div>
+<div class="wide"><button class="primary" id="apply">Apply settings</button></div></div></section>
+<section class="card"><h2>PRISM LIVE & BACKUP</h2><p class="note">In PRISM, add a Web Browser source using your GitHub Pages URL followed by <b>?overlay=1</b>. Place it along the bottom of your 16:9 stream. This version retains browser-local saving; separate PRISM browser sync may require a Firebase/Supabase connection.</p><div class="row"><button id="copy">Copy overlay URL</button><button id="export">Export backup</button><button id="import">Import backup</button><input id="file" type="file" accept="application/json" hidden></div></section>
+</main></div>
+<div id="overlayScreen" class="hidden"><div class="stage"><div class="bug" id="bug">
+<div class="side home"><div class="logo" id="ohl">H</div><div class="info"><div class="teamname" id="ohn">HOME</div><div class="sets" id="ohsets">SETS WON 0</div></div><div class="bigscore" id="ohscore">0</div></div>
+<div class="center"><div class="brand">VOLLEYBALL</div><div class="setnum" id="oset">SET 1</div><div class="serveText" id="oserve">● HOME SERVING</div></div>
+<div class="side away"><div class="bigscore" id="oascore">0</div><div class="info"><div class="teamname" id="oan">AWAY</div><div class="sets" id="oasets">SETS WON 0</div></div><div class="logo" id="oal">A</div></div>
+<div class="foot"><span class="live">● LIVE</span><span id="ohist">SET HISTORY —</span><span class="state" id="opoint"></span><span id="oto">TO: 2 | 2</span></div>
+</div></div></div>
+<script>
+const D=()=>({home:'HOME',away:'AWAY',homeColor:'#1769aa',awayColor:'#b72b3c',homeLogo:'',awayLogo:'',format:3,target:25,finalTarget:15,timeoutLimit:2,set:1,homeScore:0,awayScore:0,homeSets:0,awaySets:0,serve:'home',timeoutsHome:2,timeoutsAway:2,history:[],finished:false,undo:[]});
+const $=id=>document.getElementById(id);function load(){try{return JSON.parse(localStorage.getItem('vb-live-state'))}catch(e){return null}}let s=load()||D();
+function logo(el,url,letter){el.innerHTML='';if(url){let i=document.createElement('img');i.src=url;i.onerror=()=>el.textContent=letter;el.append(i)}else el.textContent=letter}
+function snap(){s.undo.push(JSON.stringify({...s,undo:[]}));if(s.undo.length>30)s.undo.shift()}
+function state(){if(s.finished)return'FINAL';let n=Math.ceil(s.format/2),t=s.set===s.format?s.finalTarget:s.target,h=s.homeScore,a=s.awayScore,sp=(h>=t-1&&h-a>=0)||(a>=t-1&&a-h>=0);if(sp&&(s.homeSets===n-1&&h>=t-1||s.awaySets===n-1&&a>=t-1))return'MATCH POINT';return sp?'SET POINT':''}
+function render(changed){$('hn').textContent=s.home;$('an').textContent=s.away;$('hscore').textContent=s.homeScore;$('ascore').textContent=s.awayScore;$('hs').textContent=s.homeSets+' SETS WON';$('as').textContent=s.awaySets+' SETS WON';$('ht').textContent='Timeouts: '+s.timeoutsHome;$('at').textContent='Timeouts: '+s.timeoutsAway;$('hserve').textContent=s.serve==='home'?'● SERVING':'';$('aserve').textContent=s.serve==='away'?'● SERVING':'';$('setlabel').textContent='SET '+s.set;$('formatlabel').textContent=s.finished?'MATCH COMPLETE':'Best of '+s.format;$('hc').style.borderTopColor=s.homeColor;$('ac').style.borderTopColor=s.awayColor;document.documentElement.style.setProperty('--blue',s.homeColor);document.documentElement.style.setProperty('--red',s.awayColor);logo($('hl'),s.homeLogo,s.home[0].toUpperCase());logo($('al'),s.awayLogo,s.away[0].toUpperCase());$('sh').classList.toggle('active',s.serve==='home');$('sa').classList.toggle('active',s.serve==='away');$('next').disabled=s.finished;$('history').innerHTML='';s.history.forEach((x,i)=>{let e=document.createElement('span');e.className='chip';e.textContent='S'+(i+1)+' '+x.h+'–'+x.a;$('history').append(e)});
+$('ohn').textContent=(s.serve==='home'?'◀ ':'')+s.home;$('oan').textContent=(s.serve==='away'?'◀ ':'')+s.away;$('ohscore').textContent=s.homeScore;$('oascore').textContent=s.awayScore;$('ohsets').textContent='SETS WON '+s.homeSets;$('oasets').textContent='SETS WON '+s.awaySets;$('oset').textContent='SET '+s.set;$('oserve').textContent='';$('ohn').textContent=(s.serve==='home'?'◀ ':'')+s.home;$('oan').textContent=(s.serve==='away'?'◀ ':'')+s.away;$('oto').textContent='TO: '+s.timeoutsHome+' | '+s.timeoutsAway;$('ohist').textContent=s.history.length?'SETS '+s.history.map((x,i)=>(i+1)+':'+x.h+'-'+x.a).join(' · '):'SET HISTORY —';$('opoint').textContent=state();logo($('ohl'),s.homeLogo,s.home[0].toUpperCase());logo($('oal'),s.awayLogo,s.away[0].toUpperCase());
+if(changed){let el=$(changed==='home'?'ohscore':'oascore');el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');$('bug').classList.remove('pulse');void $('bug').offsetWidth;$('bug').classList.add('pulse')}}
+function save(changed){localStorage.setItem('vb-live-state',JSON.stringify(s));render(changed)}
+function check(){let t=s.set===s.format?s.finalTarget:s.target,a=s.homeScore,b=s.awayScore;if(Math.max(a,b)>=t&&Math.abs(a-b)>=2){let w=a>b?'home':'away';s[w+'Sets']++;s.history.push({h:a,a:b});if(s[w+'Sets']>=Math.ceil(s.format/2))s.finished=true;else{s.set++;s.homeScore=0;s.awayScore=0;s.timeoutsHome=s.timeoutLimit;s.timeoutsAway=s.timeoutLimit;s.serve=w}}}
+function point(team,d){if(s.finished)return;snap();s[team+'Score']=Math.max(0,s[team+'Score']+d);if(d>0)s.serve=team;check();save(d>0?team:null)}
+function timeout(team){let k=team==='home'?'timeoutsHome':'timeoutsAway';if(!s.finished&&s[k]>0){snap();s[k]--;save()}}
+$('hp').onclick=()=>point('home',1);$('ap').onclick=()=>point('away',1);$('hm').onclick=()=>point('home',-1);$('am').onclick=()=>point('away',-1);$('th').onclick=()=>timeout('home');$('ta').onclick=()=>timeout('away');$('sh').onclick=()=>{snap();s.serve='home';save()};$('sa').onclick=()=>{snap();s.serve='away';save()};
+$('next').onclick=()=>{if(s.finished||(!s.homeScore&&!s.awayScore))return;let t=s.set===s.format?s.finalTarget:s.target;if(Math.max(s.homeScore,s.awayScore)>=t&&Math.abs(s.homeScore-s.awayScore)>=2){snap();check()}else{if(!confirm('Current set is not complete. Start the next set anyway?'))return;snap();s.history.push({h:s.homeScore,a:s.awayScore});s.set++;s.homeScore=s.awayScore=0;s.timeoutsHome=s.timeoutsAway=s.timeoutLimit}save()};
+$('undo').onclick=()=>{if(!s.undo.length)return;let x=JSON.parse(s.undo.pop());x.undo=s.undo;s=x;save()};$('reset').onclick=()=>{if(!confirm('Reset entire match?'))return;let k={home:s.home,away:s.away,homeColor:s.homeColor,awayColor:s.awayColor,homeLogo:s.homeLogo,awayLogo:s.awayLogo,format:s.format,target:s.target,finalTarget:s.finalTarget,timeoutLimit:s.timeoutLimit};s={...D(),...k,timeoutsHome:k.timeoutLimit,timeoutsAway:k.timeoutLimit};save()};
+$('apply').onclick=()=>{snap();s.home=$('homeName').value.trim()||'HOME';s.away=$('awayName').value.trim()||'AWAY';s.homeColor=$('homeColor').value;s.awayColor=$('awayColor').value;s.homeLogo=$('homeLogo').value.trim();s.awayLogo=$('awayLogo').value.trim();s.format=+$('format').value;s.target=+$('target').value;s.finalTarget=+$('finalTarget').value;s.timeoutLimit=+$('timeoutLimit').value;s.timeoutsHome=s.timeoutsAway=s.timeoutLimit;save()};
+$('openOverlay').onclick=()=>window.open(location.href.split('?')[0]+'?overlay=1','vb-overlay');$('copy').onclick=async()=>{let u=location.href.split('?')[0]+'?overlay=1';try{await navigator.clipboard.writeText(u);alert('Overlay URL copied')}catch(e){prompt('Copy overlay URL',u)}};
+$('export').onclick=()=>{let b=new Blob([JSON.stringify(s,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='volleyball-match-backup.json';a.click();URL.revokeObjectURL(a.href)};$('import').onclick=()=>$('file').click();$('file').onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{s=JSON.parse(r.result);save()}catch(e){alert('Invalid backup')}};r.readAsText(f)};
+let ov=new URLSearchParams(location.search).get('overlay')==='1';if(ov){$('controller').classList.add('hidden');$('overlayScreen').classList.remove('hidden');document.body.style.background='transparent';document.documentElement.style.background='transparent'}else{let map={homeName:'home',awayName:'away',homeColor:'homeColor',awayColor:'awayColor',homeLogo:'homeLogo',awayLogo:'awayLogo',format:'format',target:'target',finalTarget:'finalTarget',timeoutLimit:'timeoutLimit'};Object.entries(map).forEach(([id,k])=>$(id).value=s[k])}render();
+window.addEventListener('storage',e=>{if(e.key==='vb-live-state'){s=load()||s;render()}});if('BroadcastChannel'in window){let bc=new BroadcastChannel('vb-live-score');bc.onmessage=()=>{s=load()||s;render()};let old=save;save=(c)=>{localStorage.setItem('vb-live-state',JSON.stringify(s));bc.postMessage('update');render(c)}}
+</script></body></html>
